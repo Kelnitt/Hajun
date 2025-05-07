@@ -6,8 +6,10 @@ def AnomaliesValidation(stats, schemas, display):
   """
   TensorFlow Data Validation Anomalies Validation
   """
+  # Validate Stats
   anomalies = tfdv.validate_statistics(stats, schemas)
   total = len(anomalies.anomaly_info.items())
+  # Display Anomalies
   if display and total > 0:
     tfdv.display_anomalies(anomalies)
   return total
@@ -18,14 +20,15 @@ def SelectColSchemas(schema : schema_pb2.Schema, columns : List[str], display : 
   """
   partial_schema = schema_pb2.Schema()
   missing_columns = []
+  # Validate Available Column
   for cols in columns:
     feature = tfdv.get_feature(schema, cols)
     if feature:
       partial_schema.feature.add().CopyFrom(feature)
     else:
       missing_columns.append(cols)
+  # Raise Value Error
   if missing_columns:
     raise ValueError(f"The Following Cols Unavailable in Schema : {missing_columns}")
-  if display:
-    tfdv.display_schema(partial_schema)
-  return partial_schema
+  # Display Schema
+  tfdv.display_schema(partial_schema)
